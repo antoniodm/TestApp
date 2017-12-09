@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Test</string>
+    <string name="date_picker_title">Select Date</string>
+    <string name="text_sensor_id">Sensor Id: %d</string>
+    <string name="text_arduino_id">Arduino Id: %d</string>
+    <string name="text_type">Seed Type: %s</string>
+    <string name="text_flag">Active: %s</string>
+    <string name="text_ip">Server Address: %s</string>
+
+
+</resources>
