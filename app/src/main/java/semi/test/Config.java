@@ -9,6 +9,8 @@ public class Config {
     public static final String JSON_ARRAY = "result";
     public static final String KEY_ID = "id_sensor";
     public static final String KEY_FLAG = "active";
+    public static final String KEY_PAUSE = "pause";
+
     public static final String KEY_HUMIDITY = "humidity";
     public static final String KEY_TEMPERATURE = "temperature";
     public static final String KEY_DATA = "datetime";

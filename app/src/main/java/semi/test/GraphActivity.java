@@ -21,26 +21,26 @@ public class GraphActivity extends AppCompatActivity {
         Intent intent = getIntent();
         Bundle bd = intent.getExtras();
         int id = bd.getInt("id");
-        for (int g = 0; g<sensorsArray.length;g++){
-            if (sensorsArray[g].getId() == id) j=g;
+        for (int g = 0; g<sensorsArray.size(); g++){
+            if (sensorsArray.get(g).getId() == id) j=g;
         }
 
         GraphView graph = (GraphView) findViewById(R.id.graph);
-        int max = MainActivity.sensorsArray[j].misurations.length;
+        int max = MainActivity.sensorsArray.get(j).misurations.size();
 
         //serie di datapoint per l'umidità
         LineGraphSeries<DataPoint> series;
-        DataPoint[] coordinate = new DataPoint[MainActivity.sensorsArray[j].misurations.length];
+        DataPoint[] coordinate = new DataPoint[MainActivity.sensorsArray.get(j).misurations.size()];
         for (int i=0; i<max; i++){
-            coordinate[i] = new DataPoint(MainActivity.sensorsArray[j].misurations[i].getDate(),MainActivity.sensorsArray[j].misurations[i].getHumidity());
+            coordinate[i] = new DataPoint(MainActivity.sensorsArray.get(j).misurations.get(i).getDate(),MainActivity.sensorsArray.get(j).misurations.get(i).getHumidity());
         }
         series = new LineGraphSeries<>(coordinate);
 
         //serie di datapoint per la temperatura
         LineGraphSeries<DataPoint> series2;
-        DataPoint[] coordinate2 = new DataPoint[MainActivity.sensorsArray[j].misurations.length];
+        DataPoint[] coordinate2 = new DataPoint[MainActivity.sensorsArray.get(j).misurations.size()];
         for (int i=0; i<max; i++){
-            coordinate2[i] = new DataPoint(MainActivity.sensorsArray[j].misurations[i].getDate(),MainActivity.sensorsArray[j].misurations[i].getTemperature());
+            coordinate2[i] = new DataPoint(MainActivity.sensorsArray.get(j).misurations.get(i).getDate(),MainActivity.sensorsArray.get(j).misurations.get(i).getTemperature());
         }
         series2 = new LineGraphSeries<>(coordinate2);
 
@@ -51,8 +51,8 @@ public class GraphActivity extends AppCompatActivity {
 
         // set manual x bounds to have nice steps
         graph.getViewport().setXAxisBoundsManual(true);
-        graph.getViewport().setMinX(MainActivity.sensorsArray[j].misurations[0].getDate().getTime());
-        graph.getViewport().setMaxX(MainActivity.sensorsArray[j].misurations[max-1].getDate().getTime());
+        graph.getViewport().setMinX(MainActivity.sensorsArray.get(j).misurations.get(0).getDate().getTime());
+        graph.getViewport().setMaxX(MainActivity.sensorsArray.get(j).misurations.get(max-1).getDate().getTime());
 
         graph.getViewport().setYAxisBoundsManual(true);
         graph.getViewport().setMinY(0);

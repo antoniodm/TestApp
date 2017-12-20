@@ -7,7 +7,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -18,7 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,14 +30,14 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     public static final String MY_PREFS_NAME = "MyPrefsFile";
-    public static Sensor[] sensorsArray;
+    public static ArrayList<Sensor> sensorsArray = new ArrayList<Sensor>();
     public static String address;
     public  TextView TextViewIp;
     private Button buttonGet;
     private Button buttonChangeIp;
 
     private ListView listView;
-    List<String> li;        //per stampare la lista senza usare custom adapter
+    //List<String> li;        //per stampare la lista senza usare custom adapter
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
         //buttonGraph = (Button) findViewById(R.id.buttonGraph);
-        listView = (ListView)  findViewById(R.id.listView);
+        listView = (ListView)  findViewById(R.id.list);
         //avvio i listener sui bottoni
         buttonGet.setOnClickListener(this);
         buttonChangeIp.setOnClickListener(this);
@@ -114,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         StringRequest stringRequest = new StringRequest(url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-
                 parseSensors(response);
             }
         },
@@ -131,14 +129,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void parseSensors(String res){
         JSONObject jsonObject;
         JSONArray jasarray;
+        CustomSensorAdapter adapter;
+        sensorsArray.clear();
 
         try {
 
             jsonObject = new JSONObject(res);
             jasarray = jsonObject.getJSONArray(Config.SENSORS_ARRAY);
 
-            sensorsArray = new Sensor[jasarray.length()];
-            li = new ArrayList<>();
+            //li = new ArrayList<>();
 
             for(int i = 0; i< jasarray.length(); i++){
 
@@ -148,19 +147,38 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 String type = jo.getString(Config.KEY_TYPE);
                 int code = parseInt(jo.getString(Config.KEY_CODE));
                 boolean active = jo.getBoolean(Config.KEY_FLAG);
+                //boolean pause = jo.getBoolean(Config.KEY_PAUSE);
 
-                sensorsArray[i] = new Sensor(id,type,code, active,null);
-                if (sensorsArray[i].getFlag()){
-                    li.add("Sensor: "+Integer.toString(id)+", Seeds: "+type+", Code: "+code+", Active: "+String.valueOf(active));
-                }
+                sensorsArray.add(new Sensor(id,type,code, active, false,null));
+                //li.add(sensorsArray[i]);
 
             }
+            adapter = new CustomSensorAdapter(sensorsArray, this);
+            //adapter.setDropDownViewResource(R.layout.list_sensor);
+            listView.setAdapter(adapter);
+            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+
+                    // Launching new Activity on selecting single List Item
+                    Intent i = new Intent(getApplicationContext(), ListMisurationActivity.class);
+                    // sending data to new activity
+                    String recipes = String.valueOf(parent.getItemAtPosition(position));
+                    String str = recipes.split(", ")[0].split(": ")[1];
+                    int k = parseInt(str);
+                    i.putExtra("id", k);
+                    startActivity(i);
+                }
+            });
+
+
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        ArrayAdapter<String> adp = new ArrayAdapter<>(this,R.layout.listitem, li);
-        adp.setDropDownViewResource(R.layout.listitem);
+       /* ArrayAdapter<String> adp = new ArrayAdapter<>(this,R.layout.list_sensor, li);
+        adp.setDropDownViewResource(R.layout.list_sensor);
         listView.setAdapter(adp);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -176,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 i.putExtra("id", k);
                 startActivity(i);
             }
-        });
+        });*/
     }
 
 

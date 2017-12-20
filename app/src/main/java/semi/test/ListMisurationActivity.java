@@ -42,7 +42,7 @@ public class ListMisurationActivity extends AppCompatActivity {
     Button buttonSetting;
     private TextView textView;
 
-    List<String> li;
+    //List<String> li;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -113,34 +113,44 @@ public class ListMisurationActivity extends AppCompatActivity {
             jsonObject = new JSONObject(res);
             jasarray = jsonObject.getJSONArray(Config.JSON_ARRAY);
 
-            for (int g = 0; g<sensorsArray.length;g++){
-                if (sensorsArray[g].getId() == ide) test=g;
+            for (int g = 0; g<sensorsArray.size();g++){
+                if (sensorsArray.get(g).getId() == ide) test=g;
             }
-            textView.setText(String.format(getString(R.string.text_sensor_id), sensorsArray[test].getId()));
+            textView.setText(String.format(getString(R.string.text_sensor_id), sensorsArray.get(test).getId()));
 
             //setto la dimensione dell'arrady di misurazioni
-            sensorsArray[test].setMisurations(jasarray.length());
-            li = new ArrayList<>();
-
+            //sensorsArray.get(test).setMisurations(jasarray.length());
+            //li = new ArrayList<>();
+            //sensorsArray.get(test).misurations.clear();
+            sensorsArray.get(test).misurations = new ArrayList<>();
             for(int i = 0; i< jasarray.length(); i++){
                 JSONObject jo = jasarray.getJSONObject(i);
+
                 int id = parseInt(jo.getString(Config.KEY_ID));
                 double humidity = parseDouble(jo.getString(Config.KEY_HUMIDITY));
                 double temperature = parseDouble(jo.getString(Config.KEY_TEMPERATURE));
                 Date date = stringToDate(jo.getString(Config.KEY_DATA));
+                sensorsArray.get(test).misurations.add(new JSON(date,id,humidity,temperature));
 
-                sensorsArray[test].misurations[i] = new JSON(date,id,humidity,temperature);
-
-                li.add("Hum: "+Double.toString(humidity)+"%, Temp: "+Double.toString(temperature)+"°C\n"+android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss a", date));
+                //li.add("Hum: "+Double.toString(humidity)+"%, Temp: "+Double.toString(temperature)+"°C\n"+android.text.format.DateFormat.format("yyyy-MM-dd hh:mm:ss a", date));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        Collections.reverse(li);
-        ArrayAdapter<String> adp = new ArrayAdapter<>(this,R.layout.listitem, li);
-        adp.setDropDownViewResource(R.layout.listitem);
+       // Collections.reverse(li);
+        CustomMisurationAdapter adp = new CustomMisurationAdapter(getMisuration(ide), this);
+        adp.setDropDownViewResource(R.layout.list_misuration);
         listView1.setAdapter(adp);
     }
+
+    public ArrayList<JSON> getMisuration(int idSensor){
+        for (int i=0; i < sensorsArray.size(); i++){
+            if (sensorsArray.get(i).getId() == idSensor)
+                return sensorsArray.get(i).misurations;
+        }
+        return null;
+    }
+
 
     public Date stringToDate(String str){
         Date d = null;

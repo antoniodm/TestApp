@@ -27,6 +27,7 @@ class JSON implements Serializable{
         return date;
     }
 
+
     public int getId(){
         return id;
     }

@@ -49,13 +49,13 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         textViewFlag = (TextView) findViewById(R.id.textViewFlag);
 
         id = bd.getInt("id");
-        for (int g = 0; g<sensorsArray.length;g++){
-            if (sensorsArray[g].getId() == id) {
+        for (int g = 0; g<sensorsArray.size(); g++){
+            if (sensorsArray.get(g).getId() == id) {
                 position = g;
                 textViewId.setText(String.format(getString(R.string.text_sensor_id), id));
-                textViewArd.setText(String.format(getString(R.string.text_arduino_id), sensorsArray[position].getCode()));
-                textViewType.setText(String.format(getString(R.string.text_type), sensorsArray[position].getSeedsType()));
-                textViewFlag.setText(String.format(getString(R.string.text_flag), String.valueOf(sensorsArray[position].getFlag())));
+                textViewArd.setText(String.format(getString(R.string.text_arduino_id), sensorsArray.get(g).getCode()));
+                textViewType.setText(String.format(getString(R.string.text_type), sensorsArray.get(g).getSeedsType()));
+                textViewFlag.setText(String.format(getString(R.string.text_flag), String.valueOf(sensorsArray.get(g).getActive())));
 
             }
         }
@@ -65,12 +65,12 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
         public void onClick(View v) {
 
             if (v == buttonArc){
-                if (!sensorsArray[position].getSeedsType().equals("indefinito")){
+                if (!sensorsArray.get(position).getSeedsType().equals("indefinito")){
                     archive();
-                    sensorsArray[position].setType("indefinito");
-                    sensorsArray[position].setFlag(false);
-                    textViewFlag.setText(String.format(getString(R.string.text_flag), String.valueOf(sensorsArray[position].getFlag())));
-                    textViewType.setText(String.format(getString(R.string.text_type), sensorsArray[position].getSeedsType()));
+                    sensorsArray.get(position).setType("indefinito");
+                    sensorsArray.get(position).setActive(false);
+                    textViewFlag.setText(String.format(getString(R.string.text_flag), String.valueOf(sensorsArray.get(position).getActive())));
+                    textViewType.setText(String.format(getString(R.string.text_type), sensorsArray.get(position).getSeedsType()));
 
 
                 }else{
@@ -82,7 +82,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                 final EditText txt = new EditText(this);
 
                 // Set the default text to a link of the Queen
-                txt.setHint(sensorsArray[position].getSeedsType());
+                txt.setHint(sensorsArray.get(position).getSeedsType());
                 new AlertDialog.Builder(this)
                         .setTitle("Seed Type")
                         .setMessage("Insert the seed type")
@@ -91,8 +91,8 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 String name = txt.getText().toString();
                                 setSeedName(name);
-                                sensorsArray[position].setType(name);
-                                textViewType.setText(String.format(getString(R.string.text_type), sensorsArray[position].getSeedsType()));
+                                sensorsArray.get(position).setType(name);
+                                textViewType.setText(String.format(getString(R.string.text_type), sensorsArray.get(position).getSeedsType()));
 
                             }
                         })
@@ -133,7 +133,7 @@ public class SettingsActivity extends AppCompatActivity implements View.OnClickL
 
 
         public void archive(){
-            String request = "http://"+address+SERVER_URL+"id="+id+"&archive=true"+"&code="+sensorsArray[position].getCode();
+            String request = "http://"+address+SERVER_URL+"id="+id+"&archive=true"+"&code="+sensorsArray.get(position).getCode();
             StringRequest stringRequest = new StringRequest(request, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
